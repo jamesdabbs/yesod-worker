@@ -20,17 +20,18 @@ dequeue s = case S.viewl s of
 
 
 -- | An empty queue, suitable for initializing the app queue at boot
-emptyQueue :: IO (JobQueue a)
+emptyQueue :: IO JobQueue
 emptyQueue = atomically $ newTVar S.empty
 
-enqueueJob :: JobQueue a -> a -> IO ()
-enqueueJob qvar j = atomically . modifyTVar qvar $ \v -> enqueue v j
+enqueueJob :: (Show a) => JobQueue -> a -> IO ()
+enqueueJob qvar j = atomically $ modifyTVar qvar add
+  where add q = enqueue q $ show j
 
-dequeueJob :: JobQueue a -> IO (Maybe a)
+dequeueJob :: JobQueue -> IO (Maybe String)
 dequeueJob qvar = atomically $ do
   q <- readTVar qvar
   case dequeue q of
     Just (x,xs) -> do
       writeTVar qvar xs
-      return $ Just x
+      return . Just . read $ x
     Nothing -> return Nothing

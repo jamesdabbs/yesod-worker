@@ -1,0 +1,3 @@
+/      WorkerHomeR  GET
+/kill  KillWorkerR POST
+/spawn SpawnWorkerR POST

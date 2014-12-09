@@ -1,30 +1,40 @@
-{-# LANGUAGE ConstraintKinds, FlexibleInstances, UndecidableInstances #-}
+{-# LANGUAGE ConstraintKinds, FlexibleInstances, UndecidableInstances, ViewPatterns #-}
 module Yesod.Worker.Types where
 
 import Prelude
 import Yesod
 
 import Control.Applicative (Applicative (..))
+import Control.Concurrent (ThreadId)
 import Control.Concurrent.STM (TVar)
 import Control.Monad (liftM, ap)
 import Control.Monad.Logger (LogSource, MonadLogger (..))
 import Control.Monad.Trans.Control (MonadBaseControl (..))
 import Control.Monad.Trans.Resource (InternalState, runInternalState, MonadThrow (..), monadThrow, MonadResourceBase)
-import qualified Data.Sequence as S
+import qualified Data.Sequence as Seq
+import qualified Data.Set as Set
 import Database.Persist.Sql (SqlPersistT)
 import Language.Haskell.TH.Syntax (Loc)
 import System.Log.FastLogger (LogStr, toLogStr)
 
 
-type JobQueue a = TVar (S.Seq a)
+type JobQueue = TVar (Seq.Seq String)
+type WorkerPool = TVar (Set.Set ThreadId)
+
+-- | Foundation type for the Worker subsite
+data Workers = Workers
+  { workerJobQueue :: JobQueue
+  , workerPool :: WorkerPool
+  }
+
+mkYesodSubData "Workers" $(parseRoutesFile "routes")
 
 -- | Typeclass for customizing Worker settings
-class Yesod site => YesodWorker site where
-  -- | Your applications job type
+class (Yesod site, Read Job, Show Job) => YesodWorker site where
+  -- | Your application's job type
   type Job
 
-  -- | How to retreive the application queue
-  queue :: site -> JobQueue Job
+  workerSite :: site -> Workers
 
   -- | Number of concurrent workers
   workerCount :: site -> Int

@@ -2,6 +2,8 @@ See [the demo](https://github.com/jamesdabbs/yesod-worker-demo) for an example s
 
 # Usage
 
+These instructions are for v0.0.1. The next version is in progress, but will feature a Worker subsite and new installation instructions.
+
 ## Define your Job type
 
 ```

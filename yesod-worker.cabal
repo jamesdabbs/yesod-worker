@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                yesod-worker
-version:             0.0.1
+version:             0.0.2
 synopsis:            Drop-in(ish) background worker system for Yesod apps
 -- description:
 homepage:            https://github.com/jamesdabbs/yesod-worker
@@ -19,6 +19,7 @@ cabal-version:       >=1.10
 
 library
   exposed-modules: Yesod.Worker
+                   Yesod.Worker.Site
 
   other-modules: Yesod.Worker.Queue
                  Yesod.Worker.Types
@@ -54,6 +55,7 @@ library
                , template-haskell
                , fast-logger       >= 2.2
                , yesod-core        >= 1.4
+               , text              >= 1.2
 
   -- Directories containing source files.
   -- hs-source-dirs:

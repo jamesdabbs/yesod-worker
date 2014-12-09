@@ -1,0 +1,17 @@
+<h1>Workers
+
+<h2>
+  Worker Pool
+  <small>#{Set.size currentPool}
+<form action=@{toParent KillWorkerR} method=post>
+  <button>-</button>
+<form action=@{toParent SpawnWorkerR} method=post>
+  <button>+</button>
+<ul>
+  $forall worker <- currentPool
+    <li>#{show worker}
+
+<h2>Queue
+<ul>
+  $forall job <- currentQueue
+    <li>#{show job}
