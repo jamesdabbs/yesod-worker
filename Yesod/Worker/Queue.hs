@@ -19,6 +19,7 @@ dequeue s = case S.viewl s of
   _         -> Nothing
 
 
+-- | An empty queue, suitable for initializing the app queue at boot
 emptyQueue :: IO (JobQueue a)
 emptyQueue = atomically $ newTVar S.empty
 

@@ -18,17 +18,23 @@ import System.Log.FastLogger (LogStr, toLogStr)
 
 type JobQueue a = TVar (S.Seq a)
 
+-- | Typeclass for customizing Worker settings
 class Yesod site => YesodWorker site where
+  -- | Your applications job type
   type Job
 
+  -- | How to retreive the application queue
   queue :: site -> JobQueue Job
 
+  -- | Number of concurrent workers
   workerCount :: site -> Int
   workerCount _ = 3
 
+  -- | How to execute each job
   perform :: Job -> WorkerT site IO ()
 
   -- TODO: Allow different PersistBackends
+  -- | Helper for running SQL queries inside a Worker
   runW :: SqlPersistT (WorkerT site IO) a -> WorkerT site IO a
 
 

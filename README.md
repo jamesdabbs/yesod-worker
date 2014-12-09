@@ -1,3 +1,5 @@
+See [the demo](https://github.com/jamesdabbs/yesod-worker-demo) for an example site with workers set up.
+
 # Usage
 
 ## Define your Job type
@@ -63,7 +65,7 @@ getWhateverR = do
 # TODO
 
 * Simplify installation?
-* Improve error handling / job failures
 * Include job subsite for viewing queue and worker status
 * Swappable queue backends (for e.g. Redis)
+* Improve error handling / job failures / worker restarts
 * Allow multiple queues with customizable priority
