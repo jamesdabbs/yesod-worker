@@ -42,7 +42,7 @@ library
                       DeriveDataTypeable
 
   -- These constraints should work, but could likely be loosened
-  build-depends: base              >= 4.7   && < 4.8
+  build-depends: base              >= 4.6   && < 4.8
                , resourcet         >= 1.1.2.2
                , persistent        >= 2.1
                , yesod             >= 1.4
@@ -51,7 +51,7 @@ library
                , transformers-base >= 0.4.2
                , transformers      >= 0.4
                , monad-logger      >= 0.3
-               , monad-control     >= 0.3
+               , monad-control     >= 0.3   && < 1.0
                , template-haskell
                , fast-logger       >= 2.2
                , yesod-core        >= 1.4
