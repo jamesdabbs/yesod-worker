@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                yesod-worker
-version:             0.0.2
+version:             0.0.3
 synopsis:            Drop-in(ish) background worker system for Yesod apps
 -- description:
 homepage:            https://github.com/jamesdabbs/yesod-worker
@@ -49,9 +49,9 @@ library
                , stm               >= 2.4.2
                , containers        >= 0.5
                , transformers-base >= 0.4.2
-               , transformers      >= 0.4
+               , transformers      >= 0.3
                , monad-logger      >= 0.3
-               , monad-control     >= 0.3   && < 1.0
+               , monad-control     >= 1.0   && < 2.0
                , template-haskell
                , fast-logger       >= 2.2
                , yesod-core        >= 1.4

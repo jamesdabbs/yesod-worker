@@ -25,6 +25,7 @@ import Control.Concurrent.STM (atomically, newTVar, modifyTVar, readTVar)
 import Data.Monoid ((<>))
 import qualified Data.Set as Set
 import qualified Data.Text as Text
+import Database.Persist.Sql (runSqlPool)
 
 
 askWorkerEnv :: MonadWorker m => m (RunWorkerEnv (WorkerSite m))
@@ -35,14 +36,13 @@ getYesodW :: MonadWorker m => m (WorkerSite m)
 getYesodW = rweSite `liftM` askWorkerEnv
 
 -- | Provides the default `runW` implementation for running SQL queries inside a `Worker`
-defaultRunW :: (PersistConfig c, MonadWorker m, MonadBaseControl IO m) =>
-               (WorkerSite m -> c)
-               -> (WorkerSite m -> PersistConfigPool c)
-               -> PersistConfigBackend c m b
-               -> m b
-defaultRunW persistConfig connPool f = do
+--defaultRunW :: (PersistConfig c, MonadWorker m, MonadBaseControl IO m) =>
+--               (WorkerSite m -> PersistConfigPool c)
+--               -> PersistConfigBackend c m b
+--               -> m b
+defaultRunW connPool f = do
   app <- getYesodW
-  runPool (persistConfig app) f (connPool app)
+  runSqlPool f $ connPool app
 
 
 runWorker :: (Yesod site) => site -> WorkerT site IO a -> IO a
@@ -71,7 +71,7 @@ spawnWorker site workers = do
       mj <- dequeueJob . workerJobQueue $ workers
       case mj of
         Just job -> runWorker site $ perform $ read job
-        Nothing -> threadDelay 1000000
+        Nothing  -> threadDelay 1000000
 
 -- TODO: have this accept a ThreadId (from a user post)
 killWorker :: YesodWorker site => site -> Workers -> IO ()
@@ -86,14 +86,15 @@ killWorker site workers = do
 
 -- | Spawns workers which will consume from the application queue
 -- performing jobs as they are popped.
-startWorkers :: YesodWorker site => site -> IO Workers
-startWorkers site = do
+startWorkers :: YesodWorker site => site -> [Job] -> IO Workers
+startWorkers site jobs = do
   q <- emptyQueue
   pool <- atomically $ newTVar Set.empty
   let workers = Workers { workerJobQueue = q
                         , workerPool = pool
                         }
   replicateM_ (workerCount site) $ spawnWorker site workers
+  mapM_ (enqueueJob . workerJobQueue $ workers) jobs
   return workers
 
 -- | Add a job to the site queue from within a Handler

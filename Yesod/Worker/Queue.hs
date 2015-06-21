@@ -33,5 +33,5 @@ dequeueJob qvar = atomically $ do
   case dequeue q of
     Just (x,xs) -> do
       writeTVar qvar xs
-      return . Just . read $ x
+      return $ Just x
     Nothing -> return Nothing

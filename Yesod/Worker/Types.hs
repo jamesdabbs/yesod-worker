@@ -86,11 +86,12 @@ instance Monad m => Monad (WorkerT site m) where
   WorkerT x >>= f = WorkerT $ \r -> x r >>= \x' -> unWorkerT (f x') r
 
 instance MonadBaseControl b m => MonadBaseControl b (WorkerT site m) where
-  data StM (WorkerT site m) a = StH (StM m a)
-  liftBaseWith f = WorkerT $ \reader ->
+  type StM (WorkerT site m) a = StM m a
+  liftBaseWith f = WorkerT $ \reader' ->
     liftBaseWith $ \runInBase ->
-      f $ liftM StH . runInBase . (\(WorkerT r) -> r reader)
-  restoreM (StH base) = WorkerT $ const $ restoreM base
+      liftM (\x -> x)
+      (f $ runInBase . flip unWorkerT reader')
+  restoreM = WorkerT . const . restoreM
 
 instance MonadThrow m => MonadThrow (WorkerT site m) where
   throwM = lift . monadThrow
