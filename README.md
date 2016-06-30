@@ -1,4 +1,4 @@
-_N.B. This hasn't been updated lately and is badly in need of a persistent worker queue and admin interface. Fortunately, [I'm working on such a thing](https://github.com/jamesdabbs/keenser) that will be folded in here when it's done.
+_N.B. This hasn't been updated lately and is badly in need of a persistent worker queue and admin interface. Fortunately, [I'm working on such a thing](https://github.com/jamesdabbs/keenser) that will be folded in here when it's done._
 
 See [the demo](https://github.com/jamesdabbs/yesod-worker-demo) for an example site with workers set up.
 
