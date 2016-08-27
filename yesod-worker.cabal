@@ -12,6 +12,7 @@ category:            Web
 build-type:          Simple
 -- extra-source-files:
 cabal-version:       >=1.10
+extra-source-files:  templates/home.hamlet
 
 library
   hs-source-dirs:      src
