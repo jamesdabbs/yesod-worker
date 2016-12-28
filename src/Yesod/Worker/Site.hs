@@ -35,7 +35,7 @@ getHomeR = do
       ManagerStatus{..} <- checkStatus m wRedis
       let info    = Map.fromList sState
           get key = fromMaybe "" $ Map.lookup key info
-      lift $ defaultLayout $(whamletFile "templates/home.hamlet")
+      lift $ workerLayout $(whamletFile "templates/home.hamlet")
     _ -> do
       $(logError) "No manager running"
       return "No manager running"

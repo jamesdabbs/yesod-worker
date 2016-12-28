@@ -28,6 +28,7 @@ library
                      , keenser
                      , thyme
                      , yesod
+                     , yesod-core
   default-language:    Haskell2010
 
 -- executable yesod-worker-exe
