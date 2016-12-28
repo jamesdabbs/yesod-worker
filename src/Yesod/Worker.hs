@@ -8,6 +8,7 @@ module Yesod.Worker
   , Workers
   , YesodWorker(..)
   , bootWorkers
+  , bootManagers
   , newWorkers
   , concurrency
   , register
@@ -31,6 +32,24 @@ instance YesodWorker master => YesodSubDispatch Workers (HandlerT master IO) whe
 
 newWorkers :: IO Workers
 newWorkers = Workers <$> newEmptyMVar <*> connect defaultConnectInfo
+
+
+bootManagers :: YesodWorker master => Configurator (HandlerT master IO) -> HandlerT master IO ()
+bootManagers declareJobs = void $ do
+  Workers{..} <- workers <$> getYesod
+
+  -- TODO: need to ensure we have enough connections in the pool to cover
+  -- - however many connections the client might need
+  conn <- liftIO $ connect (defaultConnectInfo { connectMaxConnections = 100 })
+  conf <- mkConf conn $ do
+    concurrency 10
+    middleware record
+    middleware retry
+    declareJobs
+
+  m <- mkManager conf
+  liftIO $ putMVar wManager m
+
 
 bootWorkers :: YesodWorker master => Configurator (HandlerT master IO) -> HandlerT master IO ()
 bootWorkers declareJobs = void $ do
