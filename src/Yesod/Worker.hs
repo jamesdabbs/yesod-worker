@@ -14,6 +14,7 @@ module Yesod.Worker
   , enqueue
   , enqueueAt
   , enqueueIn
+  , workerRoute
   ) where
 
 import Keenser hiding (enqueue, enqueueAt, enqueueIn)
@@ -56,3 +57,5 @@ bootWorkers declareJobs = void $ do
 
 handleError :: e -> HandlerT site IO ()
 handleError _ = $(logError) "handleError"
+
+workerRoute = HomeR
