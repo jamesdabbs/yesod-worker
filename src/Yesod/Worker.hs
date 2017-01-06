@@ -30,19 +30,22 @@ import Database.Redis
 instance YesodWorker master => YesodSubDispatch Workers (HandlerT master IO) where
   yesodSubDispatch = $(mkYesodSubDispatch resourcesWorkers)
 
-newWorkers :: IO Workers
-newWorkers = Workers <$> newEmptyMVar <*> connect defaultConnectInfo
+newWorkers :: ConnectInfo -> IO Workers
+newWorkers c = Workers <$> newEmptyMVar <*> connect c
 
 bootWorkers :: YesodWorker master => Configurator (HandlerT master IO) -> HandlerT master IO ()
 bootWorkers declareJobs = void $ do
-  Workers{..} <- workers <$> getYesod
+  master <- getYesod
+
+  let Workers{..} = workers master
 
   -- TODO: need to ensure we have enough connections in the pool to cover
   -- - concurrency many workers
   -- - the heartbeat process
   -- - the signal listener
   -- - however many connections the client might need
-  conn <- liftIO $ connect (defaultConnectInfo { connectMaxConnections = 100 })
+  conn <- liftIO $ connect ((redisConfig master) { connectMaxConnections = 100 })
+
   conf <- mkConf conn $ do
     concurrency 10
     middleware record
